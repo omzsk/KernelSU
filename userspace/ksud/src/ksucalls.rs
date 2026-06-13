@@ -249,3 +249,21 @@ pub fn set_init_pgrp() -> std::io::Result<()> {
     )?;
     Ok(())
 }
+
+pub fn set_spoof_version(release: &str, version: &str) -> anyhow::Result<()> {
+    let mut cmd = ksu_uapi::ksu_set_spoof_version_cmd {
+        release: [0; 65],
+        version: [0; 65],
+    };
+
+    let r_bytes = release.as_bytes();
+    let r_len = std::cmp::min(r_bytes.len(), 64);
+    cmd.release[..r_len].copy_from_slice(&r_bytes[..r_len]);
+
+    let v_bytes = version.as_bytes();
+    let v_len = std::cmp::min(v_bytes.len(), 64);
+    cmd.version[..v_len].copy_from_slice(&v_bytes[..v_len]);
+
+    ksuctl(ksu_uapi::KSU_IOCTL_SET_SPOOF_VERSION, &raw mut cmd)?;
+    Ok(())
+}

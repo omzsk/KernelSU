@@ -446,6 +446,15 @@ enum Kernel {
     },
     /// Notify that module is mounted
     NotifyModuleMounted,
+    /// Spoof kernel release and version strings
+    SpoofUname {
+        /// kernel release string (e.g. 5.10.117-android12-9)
+        #[arg(short, long)]
+        release: Option<String>,
+        /// kernel version string (e.g. #1 SMP PREEMPT Mon May 19 2026)
+        #[arg(short, long)]
+        version: Option<String>,
+    },
 }
 
 #[derive(clap::Subcommand, Debug)]
@@ -761,6 +770,11 @@ pub fn run() -> Result<()> {
             Kernel::NotifyModuleMounted => {
                 ksucalls::report_module_mounted();
                 Ok(())
+            }
+            Kernel::SpoofUname { release, version } => {
+                let r = release.unwrap_or_default();
+                let v = version.unwrap_or_default();
+                ksucalls::set_spoof_version(&r, &v)
             }
         },
         Commands::Initrc { command } => match command {
