@@ -75,6 +75,10 @@ android {
         }
     }
 
+    defaultConfig {
+        applicationId = "io.ozsk.su"
+    }
+
     buildFeatures {
         aidl = true
         buildConfig = true
